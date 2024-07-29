@@ -37,11 +37,10 @@ export function Footer() {
         <div className="border-gray-100 dark:border-zinc-800 border-b-2" />
         <div className="grid grid-cols-1 gap-8 sm:gap-2 sm:grid-cols-3 p-4 text-gray-500 dark:text-zinc-500">
           <div>
-            Powered by{" "}
             <a href="https://betterhq.org/" target="_blank" rel="noreferrer">
-              Better
+              Powered by Better
             </a>{" "}
-            © 2022
+            © 2024
           </div>
           <div>
             <div className="mb-2 font-medium uppercase">
