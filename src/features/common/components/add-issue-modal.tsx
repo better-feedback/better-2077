@@ -46,7 +46,12 @@ const AddIssueModal = ({ setIsModalOpen }: AddIssueModalProps) => {
         setIsLoading(true);
         try {
             let isGithubAuth = user != undefined
-            let userId = user ? user?.sub : getWalletId()
+            // let userId = user ? user?.sub : getWalletId()
+            let userId = user ? (user.nickname || user.name || user.sub) : getWalletId();
+
+            console.log("User:", user);
+console.log("Is GitHub Auth:", isGithubAuth);
+console.log("User ID:", userId);
 
             const result = await axios.post("/api/issues/addIssue", {
                 userId,
@@ -61,7 +66,7 @@ const AddIssueModal = ({ setIsModalOpen }: AddIssueModalProps) => {
             setIsModalOpen(false)
         } catch (e) {
             setIsLoading(false);
-
+            console.error("Error submitting issue:", e.response?.data || e.message);
             console.log(e)
         }
 
@@ -73,7 +78,7 @@ const AddIssueModal = ({ setIsModalOpen }: AddIssueModalProps) => {
         }} className="rounded-md p-4 bg-white dark:bg-zinc-900 flex flex-col dark:text-white w-[90vw] h-[80vh] lg:w-[50vw] ">
             <div className="flex items-center justify-between">
 
-                <span className="font-bold mb-4">Add Issue</span>
+                <span className="font-bold mb-4">Add Idea</span>
                 <AiOutlineClose className="text-[1.5rem] cursor-pointer" onClick={() => setIsModalOpen(false)} />
             </div>
             <FormInput onChange={(e) => setTitle(e.target?.value)} placeholder="Issue Title" />
