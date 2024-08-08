@@ -49,10 +49,6 @@ const AddIssueModal = ({ setIsModalOpen }: AddIssueModalProps) => {
             // let userId = user ? user?.sub : getWalletId()
             let userId = user ? (user.nickname || user.name || user.sub) : getWalletId();
 
-            console.log("User:", user);
-console.log("Is GitHub Auth:", isGithubAuth);
-console.log("User ID:", userId);
-
             const result = await axios.post("/api/issues/addIssue", {
                 userId,
                 title,
