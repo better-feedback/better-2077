@@ -1,10 +1,10 @@
-import * as betterBounty from "../../../utils/solidity/BetterBounty.json";
-import { useContractRead } from "wagmi";
+import * as betterBounty from "../../../utils/solidity/BetterBountyV2.json";
+import { useReadContract } from "wagmi";
 
 export function useGetBounty(bountyId: string) {
-  const { data, isError, isLoading } = useContractRead({
-    addressOrName: process.env.NEXT_PUBLIC_POLYGON_CONTRACT_ADDRESS as string,
-    contractInterface: betterBounty.abi,
+  const { data, isError, isLoading } = useReadContract({
+    address: `0x${process.env.NEXT_PUBLIC_POLYGON_CONTRACT_ADDRESS?.slice(2)}` as `0x${string}`,
+    abi: betterBounty.abi,
     functionName: "getBountyById",
     args: [bountyId],
   });

@@ -19,7 +19,7 @@ export default function useAddBountyMutation() {
     }) => {
       const { addBounty } = chainsToApi[params.chain];
 
-      const bountyId = await addBounty(params);
+      // const bountyId = await addBounty(params);
       // await addBountyToMetadataComment(params.issueNumber, {
       //   chain: params.chain,
       //   bountyId,

@@ -1,4 +1,7 @@
-export type IssueType = "open" | "inProgress" | "live";
+// export type IssueType = "open" | "inProgress" | "live";
+export type IssueType = "open" | "inProgress" | "live" | "Expired" | "Open";
+
+
 
 export type Metadata = {
   bounties: {

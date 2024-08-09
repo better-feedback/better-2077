@@ -14,7 +14,8 @@ import { useRouter } from "next/router";
 
 import type { Token } from "features/tokens/types";
 import { ethers } from "ethers";
-import { useContractWrite, useAccount, useContractRead } from "wagmi";
+import { useWriteContract, useAccount, useReadContract } from "wagmi";
+import * as betterBounty from "../../../utils/solidity/BetterBountyV2.json";
 
 import { contractConfig } from "utils/solidity/defaultConfig";
 
@@ -39,37 +40,38 @@ export default function AddBounty(props: { issueNumber: number }) {
   const account = useAccount();
 
 
+  const { writeContract } = useWriteContract();
 
-  const { data, isError, isLoading: writing, write } = useContractWrite({
-    ...contractConfig,
-    functionName: 'fundBounty',
-    args: [issue?.url, maxDeadline
-      ? Math.floor((new Date(new Date(maxDeadline).setUTCHours(23, 59, 59, 59)).getTime() / 1000)).toString()
-      : "0",
-    Math.floor(Date.now() / 1000).toString(),
-    (process.env.NEXT_PUBLIC_PROJECT as string).toLowerCase()
-    ],
-    overrides: {
-      value: ethers.utils.parseEther(amount ? amount : "0"),
-    },
-    onError: (error) => {
-      setIsCreationLoading(false)
-      alert(error)
-
-    },
-    onSuccess: () => {
-      setIsCreationLoading(false)
-
+  const fundBounty = async () => {
+    setIsCreationLoading(true);
+    try {
+      await writeContract({
+        abi: betterBounty.abi,
+        address: `0x${process.env.NEXT_PUBLIC_POLYGON_CONTRACT_ADDRESS?.slice(2)}` as `0x${string}`,
+        functionName: 'fundBounty',
+        args: [
+          issue?.url,
+          maxDeadline
+            ? Math.floor(new Date(new Date(maxDeadline).setUTCHours(23, 59, 59)).getTime() / 1000).toString()
+            : '0',
+          Math.floor(Date.now() / 1000).toString(),
+          (process.env.NEXT_PUBLIC_PROJECT as string).toLowerCase(),
+          ethers.parseEther(amount ? amount : '0'),
+        ],
+      });
       router.replace(`/issues/${issue?.number}`);
+    } catch (error) {
+      alert(error);
+    } finally {
+      setIsCreationLoading(false);
     }
-  })
+  };
 
-
-  const bountyPolygon = useContractRead({
+  const bountyPolygon = useReadContract({
     ...contractConfig,
     functionName: "getBountyById",
-    args: issue?.url,
-    watch: true,
+    args: [issue?.url],
+    // watch: true,
   });
 
   function handleChangeMaxDeadline(event: React.ChangeEvent<HTMLInputElement>) {
@@ -85,12 +87,8 @@ export default function AddBounty(props: { issueNumber: number }) {
       return setAreInputsValid(false);
     }
 
-
     if (walletChain === "near") {
       localStorage.setItem("isBountyAdded", issue?.number.toString());
-
-
-
 
       addBountyMutation.mutate({
         issueNumber: issue.url,
@@ -105,10 +103,24 @@ export default function AddBounty(props: { issueNumber: number }) {
         amount,
       });
     } else {
-      write();
+      writeContract({
+        abi: betterBounty.abi,
+        address: `0x${process.env.NEXT_PUBLIC_POLYGON_CONTRACT_ADDRESS?.slice(2)}` as `0x${string}`,
+        functionName: 'fundBounty',
+        args: [
+          issue?.url,
+          maxDeadline
+            ? Math.floor(new Date(new Date(maxDeadline).setUTCHours(23, 59, 59)).getTime() / 1000).toString()
+            : '0',
+          Math.floor(Date.now() / 1000).toString(),
+          (process.env.NEXT_PUBLIC_PROJECT as string).toLowerCase(),
+          ethers.parseEther(amount ? amount : '0'),
+        ],
+      });
     }
-
   }
+  
+  
 
   useEffect(() => {
     const walletChainFromLocalStorage = localStorage.getItem("wallet-chain");
@@ -154,9 +166,11 @@ export default function AddBounty(props: { issueNumber: number }) {
     let mm = today.getMonth() + 1; //January is 0 so need to add 1 to make it 1!
     let yyyy = today.getFullYear();
     if (dd < 10) {
+      // @ts-ignore
       dd = "0" + dd;
     }
     if (mm < 10) {
+      // @ts-ignore
       mm = "0" + mm;
     }
 
@@ -182,10 +196,12 @@ export default function AddBounty(props: { issueNumber: number }) {
     }
 
     if (localStorageChain === "near") {
+      // @ts-ignore
       return !doesBountyExist ? false : Math.floor(Date.now() / 1000) > parseInt(doesBountyExist?.deadline);
     } else {
+      // @ts-ignore
       if (bountyPolygon?.data?.id !== "") {
-
+        // @ts-ignore
         return Math.floor(Date.now() / 1000) > parseInt(bountyPolygon?.data?.deadline);
       } else {
         return false
@@ -194,6 +210,7 @@ export default function AddBounty(props: { issueNumber: number }) {
   }
 
   const showDatePicker = () => {
+    // @ts-ignore
     return walletChain === "near" ? !doesBountyExist : bountyPolygon?.data?.id === ""
   }
 
@@ -215,9 +232,11 @@ export default function AddBounty(props: { issueNumber: number }) {
           <div>#{issue.number}</div>
         </LabeledInput>
         <LabeledInput label="Status">
+          {/* @ts-ignore */}
           <div>{walletChain === "near" ? isExpired() ? "EXPIRED" : (!doesBountyExist ? "NOBOUNTY" : "OPEN") : (bountyPolygon?.data?.id === "" ? "NOBOUNTY" : "OPEN")}</div>
         </LabeledInput>
         <LabeledInput label="Started At">
+          {/* @ts-ignore */}
           <div>{walletChain === "near" ? (!doesBountyExist ? "-" : parseDate(doesBountyExist?.startedAt)) : (bountyPolygon?.data?.id === "" ? "-" : parseDate(bountyPolygon?.data?.startedAt))}</div>
         </LabeledInput>
         {showDatePicker() && (
@@ -245,8 +264,9 @@ export default function AddBounty(props: { issueNumber: number }) {
           onClick={handleClickAddBounty}
           disabled={addBountyMutation.isLoading || isExpired()}
         >
-          {addBountyMutation.isLoading || writing
+          {addBountyMutation.isLoading
             ? "Creating bounty..."
+            // @ts-ignore
             : doesBountyExist || bountyPolygon?.data?.id !== ""
               ? "Fund Bounty"
               : "Create bounty"}

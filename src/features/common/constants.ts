@@ -7,6 +7,7 @@ export const chains = {
   POLYGON: "polygon",
 };
 
+// @ts-ignore
 export const chainsToApi: {
   [chain: string]: ChainApi;
 } = {

@@ -5,5 +5,5 @@ export const issueTypes: Record<"OPEN" | "IN_PROGRESS" | "LIVE" | "EXPIRED", Iss
     OPEN: "open",
     IN_PROGRESS: "inProgress",
     LIVE: "live",
-    EXPIRED : "expired"
+    EXPIRED: "Expired"
   };

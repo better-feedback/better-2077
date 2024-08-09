@@ -10,7 +10,7 @@ import {
 } from "features/common/hooks/useWalletQueries";
 import { AiFillGithub } from "react-icons/ai";
 
-import { useUser } from '@auth0/nextjs-auth0'
+import { useUser } from '@auth0/nextjs-auth0/client'
 
 import { contractConfig } from "utils/solidity/defaultConfig"
 
@@ -24,7 +24,7 @@ import type { Bounty } from "../../bounties/types";
 import { viewFunction, callFunction } from "features/near/api";
 import { parseDate } from "../../../utils/helpers.js";
 import { QueryObserverIdleResult } from "react-query";
-import { useContractRead, useAccount, useContractWrite } from "wagmi";
+import { useReadContract, useAccount, useWriteContract } from "wagmi";
 import { ethers } from "ethers";
 import axios from "axios";
 
@@ -112,35 +112,36 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   }
 
 
-  const bountySolidity = useContractRead({
+  const bountySolidity = useReadContract({
     ...contractConfig,
     functionName: "getBountyById",
-    args: props.issue.url,
-    watch: true,
+    args: [props.issue.url],
+    // watch: true,
   });
 
 
 
-  const { write: startWorkPoylgon } = useContractWrite({
-    ...contractConfig,
-    functionName: 'startWork',
-    args: props.issue.url,
+  const { writeContract } = useWriteContract();
 
-    onError: (error) => {
-      setIsApplyingToWork(false)
-      alert(error)
-    },
-    onSuccess: async () => {
-      setIsApplyingToWork(false)
-      await postComment()
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 300)
-    }
-  })
-
-
+  const startWorkPolygon = () => {
+    writeContract({
+      ...contractConfig,
+      functionName: 'startWork',
+      args: [props.issue.url],
+      // @ts-ignore
+      onError: (error: any) => {
+        setIsApplyingToWork(false);
+        alert(error);
+      },
+      onSuccess: async () => {
+        setIsApplyingToWork(false);
+        await postComment();
+        setTimeout(() => {
+          window.location.reload();
+        }, 300);
+      },
+    });
+  };
 
 
   const loadBountyDetails = () => {
@@ -159,17 +160,23 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     const localStorageChain = localStorage.getItem("wallet-chain")
 
     if (!localStorageChain) {
-      return false
+      return "open";
     }
 
     if (localStorageChain === "near") {
-      return !bounty ? false : Math.floor(Date.now() / 1000) > parseInt(bounty?.deadline);
+      // return !bounty ? false : Math.floor(Date.now() / 1000) > parseInt(bounty?.deadline);
+      return !bounty
+      ? "open"
+      : Math.floor(Date.now() / 1000) > parseInt(bounty?.deadline)
+      ? "Expired"
+      : "open";
     } else {
+      // @ts-ignore
       if (bountySolidity?.data?.id !== "") {
-
+      // @ts-ignore
         return Math.floor(Date.now() / 1000) > parseInt(bountySolidity?.data?.deadline);
       } else {
-        return false
+        return "open";
       }
     }
   }
@@ -181,8 +188,10 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     if (walletChain === "near") {
       isDisabled = !bounty ||
         !walletIsSignedInQuery.data ||
+        // @ts-ignore
         bounty?.workers?.includes(walledId?.data) || isApplyingToWork
     } else if (walletChain === "polygon") {
+      // @ts-ignore
       isDisabled = !isConnected || isApplyingToWork || bountySolidity?.data?.id == "" || (bountySolidity?.data?.workers?.includes(address) || bountySolidity.isLoading)
     }
 
@@ -219,6 +228,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
 
   useEffect(() => {
     (async () => {
+      // @ts-ignore
       if (!bountySolidity.isSuccess || bountySolidity?.data?.id === "") return;
       const apiData = await fetch(
         "https://api.coingecko.com/api/v3/coins/matic-network"
@@ -226,6 +236,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
       const maticPrice = await apiData.json();
 
       setMaticPriceInDollars(
+        // @ts-ignore
         (maticPrice?.market_data?.current_price?.usd * parseFloat(ethers.utils.formatEther(bountySolidity?.data?.pool).toString())).toFixed(
           2
         )
@@ -244,15 +255,19 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
               {!bounty ? "-" : pool + " Near"} - ${poolInDollars}
             </div>
             <div>
-              {bountySolidity?.data?.id === "" || bountySolidity.isLoading ? "-" : ethers.utils.formatEther(bountySolidity?.data?.pool ? bountySolidity?.data?.pool : 0).toString() + " Matic"} - ${maticPriceInDollars}
+             {/* @ts-ignore */}
+              {bountySolidity?.data?.id === "" || bountySolidity.isLoading ? "-" : ethers.formatEther(bountySolidity?.data?.pool ? bountySolidity?.data?.pool : 0).toString() + " Matic"} - ${maticPriceInDollars}
             </div>
           </>
         }
       />
+                   {/* @ts-ignore */}
       {bounty !== null || bountySolidity?.data?.id !== "" && (
         <SidebarItem
           title="Deadline"
+                      // @ts-ignore 
           content={<><div>Near: {bounty?.deadline ? parseDate(bounty?.deadline) : "-"}</div>
+                       {/* @ts-ignore */}
             <div>Polygon: {bountySolidity?.data?.id !== "" || bountySolidity.isLoading ? parseDate(bountySolidity?.data?.deadline) : "-"}</div>
           </>}
         />
@@ -274,7 +289,8 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
           onClick={() =>
             router.push(`/issues/${props.issue.number}/add-bounty`)
           }
-          disabled={isNotConnectedToWallet() || isExpired()}
+          // disabled={isNotConnectedToWallet() || isExpired()}
+          disabled={isNotConnectedToWallet() || isExpired() === "Expired"}
         >
           Add Bounty
         </Button>
@@ -300,12 +316,11 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
 
             }
             else {
-              startWorkPoylgon()
+              startWorkPolygon()
             }
           }}
-          disabled={
-            isStartWorkDisabled() || isExpired()
-          }
+          disabled={isNotConnectedToWallet() || isExpired() === "Expired"}
+
         >
           {isApplyingToWork ? "Loading..." : "Start Work"}
         </Button>

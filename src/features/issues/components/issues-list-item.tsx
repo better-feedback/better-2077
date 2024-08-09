@@ -7,18 +7,19 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useWalletChainQuery, useWalletSignedInAccountQuery } from "features/common/hooks/useWalletQueries";
 
 import { CommentMatadata } from "./../../../features/api-routes/api/github/types";
+import * as betterBounty from "../../../utils/solidity/BetterBountyV2.json";
 
 import {
   useVotingAccessQuery,
   useIssueVoteCount,
   useVote,
 } from "features/common/hooks/useGuildQueries";
-import { upsertMetadataComment } from "features/api-routes/api/github";
+// import { upsertMetadataComment } from "features/api-routes/api/github";
 
-import { Octokit } from "octokit";
-import config from "config";
+// import { Octokit } from "octokit";
+// import config from "config";
 
-import { useAccount, useContractRead } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { contractConfig } from "utils/solidity/defaultConfig";
 
 import NearLogo from "../../common/components/icons/near-logo"
@@ -28,7 +29,7 @@ import { viewFunction } from "features/near/api";
 import { useEffect, useState } from "react";
 import { utils } from "near-api-js";
 
-const octokit = new Octokit({ auth: config.github.pat });
+// const octokit = new Octokit({ auth: config.github.pat });
 
 type Props = {
   issue: Issue;
@@ -72,11 +73,18 @@ export function IssuesListItem(props: Props) {
       });
   };
 
-  const bountySolidity = useContractRead({
+  interface BountyData {
+    id: string;
+    pool: string;
+    deadline?: string;
+  }
+  type ContractABI = typeof betterBounty.abi;
+  // @ts-ignore
+  const bountySolidity = useReadContract<BountyData, ContractABI, [string]>({
     ...contractConfig,
     functionName: "getBountyById",
-    args: props.issue.url,
-    watch: true,
+    args: [props.issue.url],
+    // watch: true,
   });
 
   useEffect(() => {
@@ -102,10 +110,12 @@ export function IssuesListItem(props: Props) {
                 </div>
               : null}
 
+              {/* @ts-ignore */}
               {bountySolidity?.data?.id !== "" ?
                 <div className="flex items-center py-1 gap-x-2">
                   <PolygonLogo className="h-3 dark:fill-white" />
-                  <span>{ethers.utils.formatEther(bountySolidity?.data?.pool || "0").toString()} MATIC</span>
+                  {/* @ts-ignore */}
+                  <span>{ethers.formatEther(bountySolidity?.data?.pool || "0").toString()} MATIC</span>
                 </div>
               : null}
             </div>
