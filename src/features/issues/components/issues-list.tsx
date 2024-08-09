@@ -2,25 +2,18 @@ import React, { useEffect, useState } from "react";
 
 import { IssuesListItem } from "./issues-list-item";
 import { useIssuesQuery } from "../hooks/useIssuesQueries";
-import { useQueryClient } from "react-query";
-
+// import { useQueryClient } from "react-query";
 import type { Issue, IssueType } from "../types";
-import { getVoteCount } from "features/common/hooks/useGuildQueries";
+// import { getVoteCount } from "features/common/hooks/useGuildQueries";
 
 export function IssuesList(props: { title: string; issueType: IssueType }) {
   const [currentPage, setCurrentPage] = React.useState(1);
-
-
-
   const {
     data = [],
     isLoading,
     isError,
     error,
   } = useIssuesQuery(props.issueType, currentPage);
-
-
-
 
   return (
     <div className="border-2 border-gray-200 dark:border-zinc-800 rounded-md">
@@ -31,7 +24,9 @@ export function IssuesList(props: { title: string; issueType: IssueType }) {
         {isLoading ? (
           <div className="text-center p-4">Loading...</div>
         ) : isError ? (
-          <div className="text-center p-4">Error: {error}</div>
+          <div className="text-center p-4">
+            Error: {(error as Error).message || "An unknown error occurred."}
+          </div>
         ) : data.length === 0 ? (
           <div className="text-center p-4">No issues</div>
         ) : (

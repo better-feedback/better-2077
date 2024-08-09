@@ -1,16 +1,11 @@
 import FormInput from "./form-input"
-
-
 import { AiOutlineClose } from "react-icons/ai"
 import { useState } from "react";
 import Button from "./button";
-
 import { useWalletSignedInAccountQuery } from "../hooks/useWalletQueries";
-
-import { useUser } from '@auth0/nextjs-auth0'
-
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { useAccount } from 'wagmi'
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 type AddIssueModalProps = {
     setIsModalOpen: (value: boolean) => void
@@ -62,7 +57,9 @@ const AddIssueModal = ({ setIsModalOpen }: AddIssueModalProps) => {
             setIsModalOpen(false)
         } catch (e) {
             setIsLoading(false);
-            console.error("Error submitting issue:", e.response?.data || e.message);
+            // console.error("Error submitting issue:", e.response?.data || e.message);
+            const error = e as AxiosError; // Cast the error to AxiosError
+            console.error("Error submitting issue:", error.response?.data || error.message);
             console.log(e)
         }
 
@@ -77,7 +74,7 @@ const AddIssueModal = ({ setIsModalOpen }: AddIssueModalProps) => {
                 <span className="font-bold mb-4">Add Idea</span>
                 <AiOutlineClose className="text-[1.5rem] cursor-pointer" onClick={() => setIsModalOpen(false)} />
             </div>
-            <FormInput onChange={(e) => setTitle(e.target?.value)} placeholder="Issue Title" />
+            <FormInput onChange={(e) => setTitle((e.target as HTMLInputElement).value)} placeholder="Issue Title" />
 
             <textarea className="mt-4 resize-none h-[70%] bg-gray-200 dark:bg-zinc-700 px-4 py-2 rounded-md  mb-4" placeholder="Drop your suggestions here. After submitting, tag the issue with >open< and >feature< to mirror it on this page for voting and funding" onChange={(e) => setValue(e.target.value)} />
 

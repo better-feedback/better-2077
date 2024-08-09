@@ -21,14 +21,18 @@ export default async function handler(
       throw new ApiError(400, "Title and body are required");
     }
 
-    const accessToken = (isGithubAuth
-      ? await getUserAccessKey(userId)
-      : process.env.GITHUB_PAT) as any;
-    
-    console.log("Access token retrieved:", accessToken ? "Token exists" : "Token is missing");
-
+    let auth;
+    try {
+      auth = isGithubAuth 
+        ? await getUserAccessKey(userId)
+        : process.env.GITHUB_PAT;
+      console.log("Auth token retrieved:", auth ? "Token exists" : "No token");
+    } catch (error) {
+      console.error("Error getting auth token:", error);
+      throw new Error("Failed to get auth token");
+    }
     const octokit = new Octokit({
-      auth: !isGithubAuth ? accessToken : accessToken?.identities[0].access_token ,
+      auth: !isGithubAuth ? auth : auth?.identities[0].access_token ,
     });
 
     console.log("Octokit instance created");
@@ -40,7 +44,11 @@ export default async function handler(
       });
       console.log("Repository found:", repo.full_name);
     } catch (error) {
-      console.error("Error fetching repository:", error.message);
+      if (error instanceof Error) {
+        console.error("Error fetching repository:", error.message);
+      } else {
+        console.error("Error fetching repository:", error);
+      }
       throw new ApiError(404, "Repository not found or no access");
     }
 

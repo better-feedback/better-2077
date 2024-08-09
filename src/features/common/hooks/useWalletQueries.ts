@@ -1,9 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
-
 import { chainsToApi } from "../constants";
-
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-
 import { useAccount } from "wagmi";
 
 export function useWalletChainQuery() {
