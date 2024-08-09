@@ -237,7 +237,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
 
       setMaticPriceInDollars(
         // @ts-ignore
-        (maticPrice?.market_data?.current_price?.usd * parseFloat(ethers.utils.formatEther(bountySolidity?.data?.pool).toString())).toFixed(
+        (maticPrice?.market_data?.current_price?.usd * parseFloat(ethers.formatEther(bountySolidity?.data?.pool).toString())).toFixed(
           2
         )
       );
