@@ -53,3 +53,89 @@ export const isExpired = (bounty, bountySolidity) => {
     }
   }
 };
+
+
+// const { createGuildClient } = require("@guildxyz/sdk");
+
+// // Get guild members for guild with ID 7487
+// async function getMembersFromGuild(guildId) {
+//   try {
+//     const guildClient = createGuildClient("2077 Idea Board"); // Replace with your project name
+//     const members = await guildClient.guild.getMembers(guildId);
+//     console.log("Members response:", members);
+//   } catch (error) {
+//     console.error("Error fetching guild members:", error);
+//   }
+// }
+// getMembersFromGuild(7487);
+
+
+// // Get guild id and role id for guild with name "2077 Idea Board"
+// async function getGuildAndRoleIds(guildName, roleName) {
+//   try {
+//     const guildClient = createGuildClient("2077 Idea Board"); // 2077_Idea_Board  2077-idea-board
+
+//     const limit = 10; // Adjust this as needed
+//     const offset = 0; // Start from the first result
+
+//     const searchResults = await guildClient.guild.search({
+//       search: guildName,
+//       limit,
+//       offset
+//     });
+
+//     if (searchResults.length === 0) {
+//       console.error(`No guild found with the name "${guildName}".`);
+//       return;
+//     }
+
+//     const myGuild = searchResults[0];
+//     const NEXT_PUBLIC_GUILD_ID = myGuild.id;
+//     console.log(`NEXT_PUBLIC_GUILD_ID for "${guildName}": ${NEXT_PUBLIC_GUILD_ID}`);
+
+//     const roles = await guildClient.guild.role.getAll(NEXT_PUBLIC_GUILD_ID);
+//     const myRole = roles.find(role => role.name === roleName);
+
+//     if (!myRole) {
+//       console.error(`No role found with the name "${roleName}" in the "${guildName}" guild.`);
+//       return;
+//     }
+
+//     const NEXT_PUBLIC_ROLE_ID = myRole.id;
+//     console.log(`NEXT_PUBLIC_ROLE_ID for "${roleName}" role: ${NEXT_PUBLIC_ROLE_ID}`);
+//     } catch (error) {
+//     console.error("Error fetching guild and role IDs:", error);
+//   }
+// }
+// getGuildAndRoleIds("2077 Idea Board", "Whitelist (Should later become 2077 Discord role)");
+
+
+// // Get guild name by id
+// async function getGuildNameById(guildId) {
+//   try {
+//     const guildClient = createGuildClient("Your Project Name"); // Replace with your project name
+
+//     // Fetch the guild details using the provided ID
+//     const guildDetails = await guildClient.guild.get(guildId);
+
+//     // Check if the guild details were retrieved successfully
+//     if (!guildDetails) {
+//       console.error(`No guild found with the ID "${guildId}".`);
+//       return;
+//     }
+
+//     // Extract roles or use an empty array if roles is undefined
+//     const roles = guildDetails.roles ? guildDetails.roles : [];
+
+//     // Log the guild name and other details
+//     console.log(`Guild ID: ${guildDetails.id}`);
+//     console.log(`Guild Name: ${guildDetails.name}`);
+//     console.log(`Roles: ${roles.join(", ")}`);
+//     console.log(`Image URL: ${guildDetails.imageUrl}`);
+//     console.log(`URL Name: ${guildDetails.urlName}`);
+//     console.log(`Member Count: ${guildDetails.memberCount}`);
+//   } catch (error) {
+//     console.error("Error fetching guild details:", error);
+//   }
+// }
+// getGuildNameById(7487);

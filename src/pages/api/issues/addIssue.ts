@@ -33,6 +33,21 @@ export default async function handler(
 
     console.log("Octokit instance created");
 
+    try {
+      const { data: repo } = await octokit.rest.repos.get({
+        owner: process.env.NEXT_PUBLIC_REPO_OWNER,
+        repo: process.env.NEXT_PUBLIC_REPO_NAME,
+      });
+      console.log("Repository found:", repo.full_name);
+    } catch (error) {
+      console.error("Error fetching repository:", error.message);
+      throw new ApiError(404, "Repository not found or no access");
+    }
+
+    console.log("Repo Owner:", process.env.NEXT_PUBLIC_REPO_OWNER);
+    console.log("Repo Name:", process.env.NEXT_PUBLIC_REPO_NAME);
+    console.log("GitHub PAT exists:", !!process.env.GITHUB_PAT);
+
     const newIssue = await octokit.rest.issues.create({
       owner: process.env.NEXT_PUBLIC_REPO_OWNER as string,
       repo: process.env.NEXT_PUBLIC_REPO_NAME as string,
