@@ -22,7 +22,7 @@ Your issue now appears on [roadmap.betterhq.org](https://roadmap.betterhq.org/) 
 
 ---
 
-## How to set up Better for your organization
+## How to set up Better for your organization.
 
 Better mirrors your [Github issues](https://github.com/better-feedback/roadmap/issues) to a [hosted website](https://roadmap.betterhq.org/), which allows your community to vote on them, fund them as bounties and claim the pooled funds for implementing them. Issues can range from feature requests, to content marketing ideas and DAO grant proposals.
 

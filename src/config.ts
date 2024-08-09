@@ -23,15 +23,15 @@ export const nearChainConfig = {
 
 export const siteConfig = {
   enabledChains: ["near" , "polygon"],
-  projectName: "2077 Bounties",
-  title: "2077 Bounties",
-  metaDescription: "2077 Bounties",
-  url: "https://ideas.8o.vc/",
-  metaImg: "https://raw.githubusercontent.com/better-feedback/better-app/1926cf0a2327e629128f65e57edeee7440294e0b/public/metaTagImg.jpg?token=AF6ZD6A7XI4IS7I3MRLDQSDCTY6QK",
+  projectName: "2077 Idea Board",
+  title: "2077 Idea Board",
+  metaDescription: "2077 Idea Board",
+  url: "https://ideas.2077.xyz/",
+  metaImg: "https://raw.githubusercontent.com/2077-Collective/better-2077/1926cf0a2327e629128f65e57edeee7440294e0b/public/metaTagImg.jpg?token=AF6ZD6A7XI4IS7I3MRLDQSDCTY6QK",
   externalLinks: {
-    docs: "https://github.com/better-feedback/better-2077#readme",
+    docs: "https://github.com/2077-Collective/better-2077#readme",
     discord: "wwwwRFa6aj",
-    twitter: "betterdao",
+    twitter: "2077Collective",
   },
 };
 
