@@ -2,7 +2,7 @@
 name: Idea
 about: Suggest an idea benefiting Ethereum
 title: ''
-labels: idea, feature, open
+labels: idea, open
 assignees: ''
 
 ---
